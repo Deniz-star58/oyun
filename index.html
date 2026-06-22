@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Escape or Die - Online Lobby</title>
+    <title>Escape or Die - Fixed</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -12,17 +12,27 @@
         <h1>ESCAPE OR DIE</h1>
         <div class="developer-credit">Developed by Deniz Akpınar</div>
         
-        <div class="lobby-box">
+        <div class="diamond-display-menu">💎 Toplam Elmasın: <span id="menu-diamonds">0</span></div>
+        
+        <div class="lobby-box" style="position: relative;">
+            <div id="admin-secret-trigger" onclick="toggleAdminPanel()" style="position: absolute; right: 12px; top: 12px; cursor: pointer; font-size: 1.3rem; z-index: 99;">⚙️</div>
+
             <h3>Profil Ayarları:</h3>
             <input type="text" id="username-input" placeholder="Adını Yaz..." value="Deniz">
-            <div id="profile-stats">Seviye: <span id="menu-level">1</span> | TP: <span id="menu-xp">0</span></div>
+            <div id="profile-stats" style="margin-top: 5px;">Seviye: <span id="menu-level">1</span> | TP: <span id="menu-xp">0</span></div>
             
             <div style="margin-top: 12px;">
                 <label style="font-size: 0.9rem; color: #00ffcc;">Karakter Rengini Seç:</label>
                 <input type="color" id="color-picker" value="#00ffcc" oninput="updateMyColor(this.value)">
             </div>
+
+            <div id="admin-panel" class="hidden">
+                <p style="color: #ffd700; margin: 5px 0; font-size: 0.8rem;">Yönetici Yetkisi Aktif!</p>
+                <button id="btn-admin-give-gems" class="btn" style="background-color: #ffd700; color: #000; padding: 5px; font-size: 0.8rem;">💎 Hesaba 10.000 Elmas Yükle</button>
+            </div>
         </div>
 
+        <button id="btn-fullscreen" class="btn" style="margin-bottom: 10px; background-color: #f59e0b; color: #000;">📱 Tam Ekran Modu</button>
         <button id="btn-start-solo" class="btn" style="margin-bottom: 10px; background-color: #00ffcc; color: #000;">Tek Başına Başla</button>
         
         <div class="lobby-box">
@@ -56,16 +66,18 @@
     <div id="game-container" class="hidden">
         <div id="game-ui">
             <div class="level-container">
-                <div>P1: <span id="ui-username">Deniz</span></div>
+                <div>P1: <span id="ui-username">Deniz</span> | 💎 <span id="ui-diamonds-match">0</span></div>
                 <div class="level-bar-label">Lvl: <span id="ui-level">1</span></div>
                 <div class="level-bar-bg"><div id="ui-tp-bar" class="level-bar-fill"></div></div>
             </div>
-            <div id="connection-status" style="color: #ff007f; font-weight: bold;">Online</div>
-            <button id="btn-game-exit">Menüye Dön</button>
+            
+            <div id="live-timer-box" style="color: #f59e0b; font-weight: bold; font-size: 1.2rem; background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.3);">⏱️ <span id="ui-timer">0s</span></div>
+            
             <div class="info-container">
-                <div>Wave: <span id="ui-wave">1</span></div>
+                <div style="margin-right: 10px;">Wave: <span id="ui-wave">1</span></div>
                 <div>Efekt: <span id="ui-effect">Yok</span></div>
             </div>
+            <button id="btn-game-exit" style="margin-left: 10px;">Menüye Dön</button>
         </div>
         <div id="canvas-wrapper"><canvas id="gameCanvas" width="1200" height="800"></canvas></div>
         <div id="mobile-controls"><div id="joystick-left" class="joystick-zone"><div id="stick-left" class="joystick-stick"></div></div></div>
@@ -73,9 +85,21 @@
 
     <div id="game-over-screen" class="hidden">
         <h2 id="game-over-title">OYUN BİTTİ</h2>
+        <p id="game-over-msg" style="font-size: 1.1rem; color: #ef4444; font-weight: bold; margin-bottom: 10px;"></p>
+        
+        <div id="match-stats-display" style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 12px; font-size: 0.9rem; text-align: left; color: #e2e8f0;">
+            ⏱️ Hayatta Kalma Süresi: <span id="stat-time" style="color: #00ffcc; font-weight: bold;">0s</span><br>
+            💎 Bu Maçta Toplanan: <span id="stat-diamonds" style="color: #ffd700; font-weight: bold;">0</span>
+        </div>
+
         <div id="xp-gain-text" style="color: #ffd700; margin-bottom: 15px;"></div>
-        <button id="btn-next-game" class="btn" style="background-color: #00ffcc; color: #000;">Tekrar Oyna</button>
-        <button id="btn-go-menu-over" class="btn" style="margin-top: 10px; background-color: #ff007f; color: white;">Ana Menüye Dön</button>
+        
+        <button id="btn-revive" class="btn" style="background-color: #3b82f6; color: white; margin-bottom: 10px; display: none;">
+            💎 10 Elmas Harca ve Diril
+        </button>
+        
+        <button id="btn-next-game" class="btn" style="background-color: #00ffcc; color: #000;">Tekrar / Sonraki Dalga</button>
+        <button id="btn-go-menu" class="btn" style="margin-top: 10px; background-color: #ff007f; color: white;">Ana Menüye Dön</button>
     </div>
 
     <script src="script.js"></script>

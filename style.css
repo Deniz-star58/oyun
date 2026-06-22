@@ -1,5 +1,5 @@
-/* 1. ADIM: GENEL EKRAN VE ARKA PLAN AYARLARI */
-/* Oyunu tam ekrana oturtur, kaydırma çubuklarını gizler ve koyu temayı ayarlar */
+/* 1. BÖLÜM: EKRANIN GENEL AYARLARI */
+/* Oyunu ekrana tam oturtur, kenarlardan taşmaları ve kaydırma çubuklarını engeller */
 body { 
     background-color: #0b0e14; 
     color: #fff; 
@@ -13,8 +13,8 @@ body {
     touch-action: none; 
 }
 
-/* 2. ADIM: ANA MENÜ VE LOBİ KUTULARININ TASARIMI */
-/* Escape or Die yazısının olduğu o neon ışıklı kutuların tasarımı */
+/* 2. BÖLÜM: ANA MENÜ VE LOBİ KUTULARI */
+/* Giriş ekranındaki ve lobi ekranındaki panellerin parlayan neon tasarımları */
 #lobby-menu, #pre-game-lobby { 
     background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%); 
     padding: 30px; 
@@ -22,6 +22,7 @@ body {
     box-shadow: 0 0 30px rgba(0, 255, 204, 0.2); 
     text-align: center; 
     border: 2px solid #00ffcc; 
+    position: relative; 
 }
 
 #pre-game-lobby { 
@@ -31,6 +32,28 @@ body {
 h1 { 
     color: #00ffcc; 
     text-shadow: 0 0 10px rgba(0,255,204,0.5); 
+    margin-bottom: 5px; 
+}
+
+.developer-credit { 
+    font-size: 0.85rem; 
+    color: #ff007f; 
+    letter-spacing: 2px; 
+    margin-bottom: 15px; 
+    font-weight: bold; 
+}
+
+/* 3. BÖLÜM: ELMAS VE PROFİL ALANLARI */
+/* Ana menüdeki toplam elmas göstergesinin tasarımı */
+.diamond-display-menu { 
+    background: rgba(254, 240, 138, 0.1); 
+    padding: 8px; 
+    border-radius: 10px; 
+    border: 1px dashed #ffd700; 
+    font-weight: bold; 
+    color: #ffd700; 
+    margin-bottom: 10px; 
+    font-size: 1.1rem; 
 }
 
 .lobby-box { 
@@ -48,6 +71,7 @@ input[type="text"] {
     background: #0f172a; 
     color: #fff; 
     text-align: center; 
+    font-size: 1rem; 
 }
 
 .btn { 
@@ -59,10 +83,21 @@ input[type="text"] {
     border-radius: 8px; 
     cursor: pointer; 
     width: 100%; 
+    font-size: 1rem; 
+    transition: background 0.2s; 
 }
 
-/* 3. ADIM: YENİ EKLENEN BEKLEME ODASI (LOBİ) YERLEŞİMİ */
-/* Arkadaşınla senin astronotunun yan yana, kutular içinde durmasını sağlar */
+.btn:hover { 
+    opacity: 0.9; 
+}
+
+/* Ekran geçişlerinde elemanları gizlemek için kullanılan kritik kod */
+.hidden { 
+    display: none !important; 
+}
+
+/* 4. BÖLÜM: GELİŞMİŞ ÇEVRİMİÇİ BEKLEME ODASI (LOBİ) */
+/* Arkadaşın bağlandığında astronotların yan yana durduğu kutular */
 .lobby-players-container { 
     display: flex; 
     justify-content: space-around; 
@@ -70,7 +105,7 @@ input[type="text"] {
 }
 
 .player-slot { 
-    background: rgba(255, 255, 255, 0.05); 
+    background: rgba(255,255,255,0.05); 
     padding: 20px; 
     border-radius: 15px; 
     width: 180px; 
@@ -78,7 +113,7 @@ input[type="text"] {
     border: 1px solid #334155; 
 }
 
-/* Kimin lobisine girildiyse onun üstünde parlayan "Lobi Sahibi" rozeti */
+/* Lobiyi kuran kişinin üzerinde parlayan yeşil rozet */
 .host-badge { 
     position: absolute; 
     top: -10px; 
@@ -92,11 +127,32 @@ input[type="text"] {
     border-radius: 10px; 
 }
 
-/* Ekranlar arası geçişi sağlayan gizleme kodu */
-.hidden { display: none !important; }
+/* 5. BÖLÜM: YÖNETİCİ (ADMIN) PANELİ */
+/* Renk kutusunun sağındaki gizli çark simgesi ve panel tasarımı */
+#admin-secret-trigger { 
+    position: absolute; 
+    right: 15px; 
+    bottom: 8px; 
+    cursor: pointer; 
+    font-size: 1.2rem; 
+    opacity: 0.4; 
+    transition: opacity 0.2s; 
+}
 
-/* 4. ADIM: OYUN İÇİ ARAYÜZ VE HARİTA ÖLÇEKLENDİRME */
-/* Haritanın telefonlarda ve bilgisayarda taşmasını engeller, ekrana sığdırır */
+#admin-secret-trigger:hover { 
+    opacity: 1; 
+}
+
+#admin-panel { 
+    background: rgba(255, 215, 0, 0.1); 
+    border: 1px solid #ffd700; 
+    border-radius: 8px; 
+    padding: 8px; 
+    margin-top: 10px; 
+}
+
+/* 6. BÖLÜM: OYUN İÇİ PANEL VE TELEFON UYUMLULUĞU */
+/* Oyun başladığında canavar haritasını ekrana tam sığdırır */
 #game-container { 
     display: flex; 
     flex-direction: column; 
@@ -114,6 +170,15 @@ input[type="text"] {
     margin-bottom: 10px; 
 }
 
+#btn-game-exit { 
+    background: #ff007f; 
+    color: white; 
+    border: none; 
+    padding: 6px 12px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+
 #canvas-wrapper { 
     border: 3px solid #1e293b; 
     display: flex; 
@@ -121,13 +186,13 @@ input[type="text"] {
 
 canvas { 
     background-color: #05070a; 
-    width: 100%; 
-    height: auto; 
+    max-width: 95vw; 
+    max-height: 75vh; 
     object-fit: contain; 
 }
 
-/* 5. ADIM: NEON MAVİ SEVİYE VE TP ÇUBUĞU */
-/* Brawl Stars tarzı dolan tecrübe puanı barı */
+/* 7. BÖLÜM: SEVİYE BARLARI VE JOYSTICK */
+/* Deneyip seviye atladıkça dolan Brawl Stars tarzı mavi arayüz barı */
 .level-bar-bg { 
     width: 150px; 
     height: 12px; 
@@ -144,11 +209,11 @@ canvas {
     transition: width 0.3s; 
 }
 
-/* 6. ADIM: MOBİL JOYSTICK VE OYUN BULUTU */
+/* Telefonlardaki dokunmatik sanal kumanda alanları */
 .joystick-zone { 
     width: 110px; 
     height: 110px; 
-    background: rgba(255, 255, 255, 0.1); 
+    background: rgba(255,255,255,0.1); 
     border-radius: 50%; 
     position: absolute; 
     bottom: 20px; 
@@ -158,18 +223,21 @@ canvas {
 .joystick-stick { 
     width: 44px; 
     height: 44px; 
-    background: rgba(0, 255, 204, 0.6); 
+    background: rgba(0,255,204,0.6); 
     border-radius: 50%; 
     position: absolute; 
     top: 33px; 
     left: 33px; 
 }
 
+/* 8. BÖLÜM: GELİŞMİŞ OYUN BİTTİ / DİRİLME EKRANI */
 #game-over-screen { 
     position: absolute; 
-    background: rgba(10, 13, 20, 0.95); 
+    background: rgba(10,13,20,0.96); 
     padding: 30px; 
     border-radius: 20px; 
     border: 3px solid #ff007f; 
     text-align: center; 
+    width: 280px; 
+    box-shadow: 0 0 25px rgba(255,0,127,0.4); 
 }
