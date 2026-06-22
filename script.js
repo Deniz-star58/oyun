@@ -16,6 +16,7 @@ let playerXP = parseInt(localStorage.getItem("eo_xp")) || 0;
 let totalDiamonds = parseInt(localStorage.getItem("eo_diamonds")) || 0; 
 let joystickPos = localStorage.getItem("eo_joy_pos") || "left"; 
 let sensitivity = parseInt(localStorage.getItem("eo_sensitivity")) || 50; 
+let mapZoom = parseInt(localStorage.getItem("eo_map_zoom")) || 100;
 
 let currentWave = 1; 
 let currentMatchDiamonds = 0; 
@@ -100,12 +101,11 @@ function drawPowerUp(x, y, type, size) {
 }
 
 function updateLobbyPreviews() {
-    const c1 = document.getElementById("preview-p1").getContext("2d");
-    const c2 = document.getElementById("preview-p2").getContext("2d");
+    const c1 = document.getElementById("preview-p1");
+    const c2 = document.getElementById("preview-p2");
     if(!c1 || !c2) return;
-    c1.clearRect(0,0,100,100); c2.clearRect(0,0,100,100);
-    drawAstronaut(c1, 50, 60, player1.color, 40, true);
-    if (!isSoloMode) drawAstronaut(c2, 50, 60, player2.color, 40, true);
+    drawAstronaut(c1.getContext("2d"), 50, 60, player1.color, 40, true);
+    if (!isSoloMode) drawAstronaut(c2.getContext("2d"), 50, 60, player2.color, 40, true);
 }
 
 // ==========================================
@@ -137,16 +137,17 @@ function changeJoystickPosition(pos) {
     }
 }
 
-// Canlı Hassasiyet Tetikleyici Fonksiyonu
 function changeSensitivity(val) {
-    sensitivity = parseInt(val);
-    localStorage.setItem("eo_sensitivity", sensitivity);
-    const display = document.getElementById("sens-value-display");
-    if(display) display.innerText = val;
-    
-    // Matematiksel çarpanı yeniledik: 0'da yavaş, 100'de iki kat hızlı hareket hızı limitsizliği
-    let sensFactor = 0.3 + (sensitivity / 50); 
-    player1.speed = player1.baseSpeed * sensFactor;
+    sensitivity = parseInt(val); localStorage.setItem("eo_sensitivity", sensitivity);
+    const display = document.getElementById("sens-value-display"); if(display) display.innerText = val;
+    let sensFactor = 0.3 + (sensitivity / 50); player1.speed = player1.baseSpeed * sensFactor;
+}
+
+function changeMapZoom(val) {
+    mapZoom = parseInt(val); localStorage.setItem("eo_map_zoom", mapZoom);
+    const display = document.getElementById("zoom-value-display"); if(display) display.innerText = val + "%";
+    const wrapper = document.getElementById("canvas-wrapper");
+    if(wrapper) { wrapper.style.transform = `scale(${mapZoom / 100})`; }
 }
 
 // ==========================================
@@ -208,7 +209,7 @@ function sendLobbySync() {
 }
 
 // ==========================================
-// 6. BÖLÜM: BAREMLER VE BFS HARİTASI
+// 6. BÖLÜM: ALTYAPI VE HARİTA BFS
 // ==========================================
 function getRequiredXP(lvl) { let b = 1000; for(let i=1; i<lvl; i++) b*=1.35; return Math.floor(b); }
 function addXP(amount) {
@@ -247,7 +248,6 @@ function spawnFinishLineRandomly() {
     finishLine.x = rx*tileSize+5; finishLine.y = ry*tileSize+5; finishLine.size = 30; map[ry][rx] = 0;
 }
 
-// Portalların Üretimi
 function spawnPortals() {
     portals = [];
     for (let i = 0; i < 2; i++) {
@@ -346,7 +346,7 @@ function updateGameElements() {
         }
 
         items.forEach((item, index) => {
-            if (Math.hypot(player1.x - item.x, item.y - item.y) < player1.size) {
+            if (Math.hypot(player1.x - item.x, player1.y - item.y) < player1.size) {
                 if (item.type === "speed") { player1.hasSpeedBoost = true; player1.speed = player1.speed * 1.5; player1.effectTimer = 300; document.getElementById("ui-effect").innerText = "HIZ"; } 
                 else if (item.type === "shield") { player1.hasShield = true; player1.effectTimer = 600; document.getElementById("ui-effect").innerText = "KALKAN"; }
                 else if (item.type === "diamond") { currentMatchDiamonds += 1; updateGlobalDiamondUI(); }
@@ -418,6 +418,13 @@ function gameLoop() { if (!gameActive) return; updateGameElements(); draw(); ani
 // ==========================================
 // 8. BÖLÜM: OYUN BİTİŞ VE DİRİLME ALTYAPISI
 // ==========================================
+function updateGlobalUI() {
+    const menuEl = document.getElementById("menu-diamonds");
+    if(menuEl) menuEl.innerText = totalDiamonds;
+    const matchGems = document.getElementById("ui-diamonds-match");
+    if(matchGems) matchGems.innerText = currentMatchDiamonds;
+}
+
 function endGame(isWin) {
     matchSurvivalTime = Math.max(0, Math.floor((Date.now() - matchStartTime) / 1000));
     gameActive = false; cancelAnimationFrame(animationFrameId);
@@ -458,7 +465,7 @@ function endGame(isWin) {
         } else { btnRevive.style.display = "none"; }
         currentWave = 1;
     }
-    updateGlobalDiamondUI();
+    updateGlobalUI();
 }
 
 document.getElementById("btn-revive").addEventListener("click", () => {
@@ -467,7 +474,7 @@ document.getElementById("btn-revive").addEventListener("click", () => {
         player1.isDead = false; player1.hasShield = true; player1.effectTimer = 180; 
         monsters.forEach(m => { m.x -= 100; m.y -= 100; });
         document.getElementById("game-over-screen").classList.add("hidden");
-        updateGlobalDiamondUI(); document.getElementById("ui-effect").innerText = "KALKAN";
+        updateGlobalUI(); document.getElementById("ui-effect").innerText = "KALKAN";
         matchStartTime = Date.now(); 
         gameActive = true; gameLoop(); 
     }
@@ -476,16 +483,17 @@ document.getElementById("btn-revive").addEventListener("click", () => {
 function exitToLobbyMenu() {
     gameActive = false; cancelAnimationFrame(animationFrameId); particles = []; currentMatchDiamonds = 0;
     document.getElementById("game-container").classList.add("hidden"); document.getElementById("game-over-screen").classList.add("hidden");
-    document.getElementById("lobby-menu").classList.remove("hidden"); updateGlobalDiamondUI();
+    document.getElementById("lobby-menu").classList.remove("hidden"); updateGlobalUI();
 }
 
 // ==========================================
-// 9. BÖLÜM: BUTON DİNLEYİCİLERİ VE JOYSTICK
+// 9. BÖLÜM: BUTON DİNLEYİCİLERİ VE BAĞLANTILAR
 // ==========================================
 document.getElementById("btn-start-solo").addEventListener("click", () => {
     isSoloMode = true; player1.color = document.getElementById("color-picker").value;
     player1.username = document.getElementById("username-input").value.trim() || "Deniz";
-    document.getElementById("ui-username").innerText = player1.username;
+    const uiUser = document.getElementById("ui-username");
+    if(uiUser) uiUser.innerText = player1.username;
     startNewMatch();
 });
 
@@ -505,18 +513,24 @@ document.getElementById("btn-connect-online").addEventListener("click", () => {
     if (friendID.length > 0) {
         player1.color = document.getElementById("color-picker").value; isSoloMode = false; isHost = false;
         player1.username = document.getElementById("username-input").value.trim() || "Deniz";
-        document.getElementById("ui-username").innerText = player1.username;
+        const uiUser = document.getElementById("ui-username");
+        if(uiUser) uiUser.innerText = player1.username;
         if(peer) {
             peerConn = peer.connect(friendID);
             peerConn.on('open', () => {
                 document.getElementById("lobby-menu").classList.add("hidden"); document.getElementById("pre-game-lobby").classList.remove("hidden");
                 const badge = document.querySelector(".host-badge"); if(badge) badge.classList.add("hidden");
                 document.getElementById("lobby-status").innerText = "Lobi sahibinin başlatması bekleniyor...";
-                setupOnlineListeners(); sendLobbySync();
+                setupOnlineListenersOnlineSafely(); 
             });
         }
     }
 });
+
+function setupListenersOnlineSafely() {
+    if(!peerConn) return;
+    setupOnlineListeners(); sendLobbySync();
+}
 
 document.getElementById("btn-game-exit").addEventListener("click", () => { if (peerConn && peerConn.open) peerConn.send({ type: "exitToMenu" }); exitToLobbyMenu(); });
 document.getElementById("btn-next-game").addEventListener("click", () => { document.getElementById("game-over-screen").classList.add("hidden"); startNewMatch(); });
@@ -547,7 +561,10 @@ function startNewMatch() {
     changeSensitivity(sensitivity);
     const sliderEl = document.getElementById("sensitivity-slider"); if(sliderEl) sliderEl.value = sensitivity;
 
-    updateProfileUI(); updateGlobalDiamondUI(); gameActive = true;
+    changeMapZoom(mapZoom);
+    const zoomSliderEl = document.getElementById("zoom-slider"); if(zoomSliderEl) zoomSliderEl.value = mapZoom;
+
+    updateProfileUI(); updateGlobalUI(); gameActive = true;
     matchStartTime = Date.now(); 
     gameLoop();
 }
@@ -567,29 +584,44 @@ function setupJoystick(zoneId, stickId, callback) {
 }
 setupJoystick("joystick-left", "stick-left", (x, y) => { joyLeftX = x; joyLeftY = y; });
 
-// 📱 YENİ: DOKUNMATİK SÜRÜKLEMELİ HASSASİYET BAĞLAYICI MOTORU
-function setupSensitivityTouch() {
-    const slider = document.getElementById("sensitivity-slider");
-    if (!slider) return;
+function setupSlidersTouchEngine() {
+    const sensitivitySlider = document.getElementById("sensitivity-slider");
+    const zoomSlider = document.getElementById("zoom-slider");
 
-    function handleSliderTouch(e) {
-        e.preventDefault(); // Sayfanın aşağı kaymasını engeller
-        let touch = e.touches[0];
-        let rect = slider.getBoundingClientRect();
+    function bindSlider(slider, isZoom = false) {
+        if (!slider) return;
         
-        // Parmağın çubuk üzerindeki yüzdelik konumunu hesaplıyoruz (0 ile 1 arası)
-        let percentage = (touch.clientX - rect.left) / rect.width;
-        percentage = Math.max(0, Math.min(1, percentage)); // Sınırları koru
+        function updateValue(val) {
+            slider.value = val;
+            if (isZoom) { changeMapZoom(val); } 
+            else { changeSensitivity(val); }
+        }
+
+        slider.addEventListener("input", (e) => {
+            updateValue(e.target.value);
+        });
+
+        function handleSliderTouch(e) {
+            e.stopPropagation(); 
+            let touch = e.touches[0];
+            let rect = slider.getBoundingClientRect();
+            let percentage = (touch.clientX - rect.left) / rect.width;
+            percentage = Math.max(0, Math.min(1, percentage));
+            
+            let minVal = parseInt(slider.min);
+            let maxVal = parseInt(slider.max);
+            let targetValue = Math.round(minVal + percentage * (maxVal - minVal));
+            
+            updateValue(targetValue);
+        }
         
-        let targetValue = Math.round(percentage * 100);
-        slider.value = targetValue;
-        changeSensitivity(targetValue); // Canlı olarak hıza etki et
+        slider.addEventListener("touchstart", handleSliderTouch, { passive: true });
+        slider.addEventListener("touchmove", handleSliderTouch, { passive: true });
     }
 
-    slider.addEventListener("touchstart", handleSliderTouch, { passive: false });
-    slider.addEventListener("touchmove", handleSliderTouch, { passive: false });
+    bindSlider(sensitivitySlider, false);
+    bindSlider(zoomSlider, true);
 }
 
-// Başlangıç tetikleyicileri
-initOnlineConnection(); updateLobbyPreviews(); updateProfileUI(); updateGlobalDiamondUI();
-setupSensitivityTouch(); // Sürükleme motorunu devreye aldık
+initOnlineConnection(); updateLobbyPreviews(); updateProfileUI(); updateGlobalUI();
+setupSlidersTouchEngine();

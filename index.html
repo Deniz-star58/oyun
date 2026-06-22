@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Escape or Die - Sensitivity Update</title>
+    <title>Escape or Die - Final Master</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -31,7 +31,12 @@
 
             <div style="margin-top: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px;">
                 <label style="font-size: 0.9rem; color: #00ffcc;">Joystick Hassasiyeti: <span id="sens-value-display" style="color: #ffd700; font-weight: bold;">50</span></label>
-                <input type="range" id="sensitivity-slider" min="0" max="100" value="50" oninput="changeSensitivity(this.value)" style="width: 80%; cursor: pointer;">
+                <input type="range" id="sensitivity-slider" min="0" max="100" value="50" style="width: 80%; cursor: pointer;">
+            </div>
+
+            <div style="margin-top: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <label style="font-size: 0.9rem; color: #00ffcc;">Oyun Ekranı Boyutu: <span id="zoom-value-display" style="color: #ffd700; font-weight: bold;">100%</span></label>
+                <input type="range" id="zoom-slider" min="50" max="150" value="100" style="width: 80%; cursor: pointer;">
             </div>
 
             <div style="margin-top: 12px;">
@@ -92,7 +97,9 @@
             </div>
             <button id="btn-game-exit" style="margin-left: 10px;">Menüye Dön</button>
         </div>
+        
         <div id="canvas-wrapper"><canvas id="gameCanvas" width="1200" height="800"></canvas></div>
+        
         <div id="mobile-controls">
             <div id="joystick-left" class="joystick-zone position-left">
                 <div id="stick-left" class="joystick-stick"></div>
