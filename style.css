@@ -1,4 +1,6 @@
-/* 1. BÖLÜM: EKRANIN GENEL AYARLARI */
+/* ==========================================
+   1. BÖLÜM: EKRANIN GENEL VE ARKA PLAN AYARLARI
+   ========================================== */
 /* Oyunu ekrana tam oturtur, kenarlardan taşmaları ve kaydırma çubuklarını engeller */
 body { 
     background-color: #0b0e14; 
@@ -10,10 +12,12 @@ body {
     height: 100vh; 
     margin: 0; 
     overflow: hidden; 
-    touch-action: none; 
+    touch-action: none; /* Mobilde tarayıcının ekranı büyütüp küçültmesini engeller */
 }
 
-/* 2. BÖLÜM: ANA MENÜ VE LOBİ KUTULARI */
+/* ==========================================
+   2. BÖLÜM: ANA MENÜ VE LOBİ PANELI
+   ========================================== */
 /* Giriş ekranındaki ve lobi ekranındaki panellerin parlayan neon tasarımları */
 #lobby-menu, #pre-game-lobby { 
     background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%); 
@@ -43,7 +47,6 @@ h1 {
     font-weight: bold; 
 }
 
-/* 3. BÖLÜM: ELMAS VE PROFİL ALANLARI */
 /* Ana menüdeki toplam elmas göstergesinin tasarımı */
 .diamond-display-menu { 
     background: rgba(254, 240, 138, 0.1); 
@@ -63,7 +66,8 @@ h1 {
     margin: 15px 0; 
 }
 
-input[type="text"] { 
+/* İsim yazma, arkadaş kodu girme ve seçim kutuları */
+input[type="text"], select { 
     width: 85%; 
     padding: 8px; 
     border-radius: 8px; 
@@ -72,6 +76,7 @@ input[type="text"] {
     color: #fff; 
     text-align: center; 
     font-size: 1rem; 
+    outline: none;
 }
 
 .btn { 
@@ -84,11 +89,15 @@ input[type="text"] {
     cursor: pointer; 
     width: 100%; 
     font-size: 1rem; 
-    transition: background 0.2s; 
+    transition: background 0.2s, transform 0.1s; 
 }
 
 .btn:hover { 
     opacity: 0.9; 
+}
+
+.btn:active {
+    transform: scale(0.98);
 }
 
 /* Ekran geçişlerinde elemanları gizlemek için kullanılan kritik kod */
@@ -96,7 +105,29 @@ input[type="text"] {
     display: none !important; 
 }
 
-/* 4. BÖLÜM: GELİŞMİŞ ÇEVRİMİÇİ BEKLEME ODASI (LOBİ) */
+/* Şık Hassasiyet Slider Çubuğu Görünümü */
+input[type="range"] { 
+    -webkit-appearance: none; 
+    background: #1e293b; 
+    height: 6px; 
+    border-radius: 5px; 
+    outline: none; 
+    border: 1px solid #334155; 
+}
+
+input[type="range"]::-webkit-slider-thumb { 
+    -webkit-appearance: none; 
+    background: #00ffcc; 
+    width: 16px; 
+    height: 16px; 
+    border-radius: 50%; 
+    box-shadow: 0 0 8px #00ffcc; 
+    cursor: pointer; 
+}
+
+/* ==========================================
+   3. BÖLÜM: GELİŞMİŞ ONLINE LOBİ ODASI YERLEŞİMİ
+   ========================================== */
 /* Arkadaşın bağlandığında astronotların yan yana durduğu kutular */
 .lobby-players-container { 
     display: flex; 
@@ -127,15 +158,17 @@ input[type="text"] {
     border-radius: 10px; 
 }
 
-/* 5. BÖLÜM: YÖNETİCİ (ADMIN) PANELİ */
-/* Renk kutusunun sağındaki gizli çark simgesi ve panel tasarımı */
+/* ==========================================
+   4. BÖLÜM: GİZLİ YÖNETİCİ (ADMIN) PANELİ
+   ========================================== */
 #admin-secret-trigger { 
     position: absolute; 
-    right: 15px; 
-    bottom: 8px; 
+    right: 12px; 
+    top: 12px; 
     cursor: pointer; 
-    font-size: 1.2rem; 
-    opacity: 0.4; 
+    font-size: 1.3rem; 
+    z-index: 99; 
+    opacity: 0.5; 
     transition: opacity 0.2s; 
 }
 
@@ -151,15 +184,18 @@ input[type="text"] {
     margin-top: 10px; 
 }
 
-/* 6. BÖLÜM: OYUN İÇİ PANEL VE TELEFON UYUMLULUĞU */
-/* Oyun başladığında canavar haritasını ekrana tam sığdırır */
+/* ==========================================
+   5. BÖLÜM: OYUN İÇİ PANEL VE TELEFON UYUMLULUĞU
+   ========================================== */
 #game-container { 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
     width: 100vw; 
     height: 100vh; 
-    justify-content: center; 
+    justify-content: space-between; 
+    padding: 10px 0; 
+    box-sizing: border-box; 
 }
 
 #game-ui { 
@@ -167,7 +203,6 @@ input[type="text"] {
     justify-content: space-between; 
     align-items: center; 
     width: 95vw; 
-    margin-bottom: 10px; 
 }
 
 #btn-game-exit { 
@@ -187,12 +222,11 @@ input[type="text"] {
 canvas { 
     background-color: #05070a; 
     max-width: 95vw; 
-    max-height: 75vh; 
+    max-height: 65vh; 
     object-fit: contain; 
 }
 
-/* 7. BÖLÜM: SEVİYE BARLARI VE JOYSTICK */
-/* Deneyip seviye atladıkça dolan Brawl Stars tarzı mavi arayüz barı */
+/* Deneyip seviye atladıkça dolan arayüz barı */
 .level-bar-bg { 
     width: 150px; 
     height: 12px; 
@@ -209,35 +243,60 @@ canvas {
     transition: width 0.3s; 
 }
 
-/* Telefonlardaki dokunmatik sanal kumanda alanları */
+/* ==========================================
+   6. BÖLÜM: JOYSTICK SAĞ/SOL KONUMLANDIRMA SİSTEMİ
+   ========================================== */
+#mobile-controls { 
+    position: relative; 
+    width: 100vw; 
+    height: 120px; 
+    margin-top: auto; 
+    pointer-events: none; 
+}
+
 .joystick-zone { 
     width: 110px; 
     height: 110px; 
-    background: rgba(255,255,255,0.1); 
+    background: rgba(255,255,255,0.15); 
+    border: 2px solid rgba(255,255,255,0.2); 
     border-radius: 50%; 
     position: absolute; 
-    bottom: 20px; 
-    left: 20px; 
+    bottom: 5px; 
+    pointer-events: auto; 
 }
 
 .joystick-stick { 
     width: 44px; 
     height: 44px; 
-    background: rgba(0,255,204,0.6); 
+    background: rgba(0, 255, 204, 0.7); 
     border-radius: 50%; 
     position: absolute; 
     top: 33px; 
     left: 33px; 
 }
 
-/* 8. BÖLÜM: GELİŞMİŞ OYUN BİTTİ / DİRİLME EKRANI */
+/* Değiştirilebilir joystick konum kuralları */
+.position-left { 
+    left: 25px; 
+    right: auto; 
+}
+
+.position-right { 
+    right: 25px; 
+    left: auto; 
+}
+
+/* ==========================================
+   7. BÖLÜM: GELİŞMİŞ OYUN BİTİŞ PANELİ
+   ========================================== */
 #game-over-screen { 
     position: absolute; 
-    background: rgba(10,13,20,0.96); 
-    padding: 30px; 
+    background: rgba(10,13,20,0.97); 
+    padding: 25px; 
     border-radius: 20px; 
     border: 3px solid #ff007f; 
     text-align: center; 
     width: 280px; 
-    box-shadow: 0 0 25px rgba(255,0,127,0.4); 
+    box-shadow: 0 0 25px rgba(255,0,127,0.5); 
+    z-index: 999; 
 }

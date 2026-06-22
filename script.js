@@ -10,9 +10,12 @@ let peer = null;
 let peerConn = null;
 let myID = "";
 
+// Kalıcı Veri Sistemi (LocalStorage)
 let playerLevel = parseInt(localStorage.getItem("eo_level")) || 1;
 let playerXP = parseInt(localStorage.getItem("eo_xp")) || 0;
 let totalDiamonds = parseInt(localStorage.getItem("eo_diamonds")) || 0; 
+let joystickPos = localStorage.getItem("eo_joy_pos") || "left"; 
+let sensitivity = parseInt(localStorage.getItem("eo_sensitivity")) || 50; 
 
 let currentWave = 1; 
 let currentMatchDiamonds = 0; 
@@ -27,7 +30,7 @@ const tileSize = 40;
 let cols = 30; let rows = 20;
 let map = [];
 
-let player1 = { x: 0, y: 0, size: 24, color: "#00ffcc", username: "Deniz", isDead: false, hasShield: false, hasSpeedBoost: false, effectTimer: 0, speed: 4, baseSpeed: 4 };
+let player1 = { x: 120, y: 120, size: 24, color: "#00ffcc", username: "Deniz", isDead: false, hasShield: false, hasSpeedBoost: false, effectTimer: 0, speed: 4, baseSpeed: 4 };
 let player2 = { x: -100, y: -100, size: 24, color: "#ff007f", username: "Arkadaşın", isDead: false }; 
 
 let monsters = [];
@@ -40,7 +43,7 @@ let joyLeftX = 0, joyLeftY = 0;
 let portalCooldown = 0; 
 
 // ==========================================
-// 2. BÖLÜM: GRAFİK VE ÇİZİM MOTORU (SVG)
+// 2. BÖLÜM: GRAFİK VE ÇİZİM MOTORU
 // ==========================================
 function drawAstronaut(targetCtx, x, y, color, size, isUI = false) {
     let ox = isUI ? x : x + size/2;
@@ -106,7 +109,7 @@ function updateLobbyPreviews() {
 }
 
 // ==========================================
-// 3. BÖLÜM: YÖNETİCİ PANELİ (ADMIN)
+// 3. BÖLÜM: YÖNETİCİ PANELİ VE AYARLAR
 // ==========================================
 function toggleAdminPanel() {
     let name = document.getElementById("username-input").value.trim();
@@ -125,6 +128,27 @@ function updateGlobalDiamondUI() {
     const matchGems = document.getElementById("ui-diamonds-match"); if(matchGems) matchGems.innerText = currentMatchDiamonds;
 }
 
+function changeJoystickPosition(pos) {
+    joystickPos = pos; localStorage.setItem("eo_joy_pos", pos);
+    const joyZone = document.getElementById("joystick-left");
+    if (joyZone) {
+        if (pos === "right") { joyZone.className = "joystick-zone position-right"; } 
+        else { joyZone.className = "joystick-zone position-left"; }
+    }
+}
+
+// Canlı Hassasiyet Tetikleyici Fonksiyonu
+function changeSensitivity(val) {
+    sensitivity = parseInt(val);
+    localStorage.setItem("eo_sensitivity", sensitivity);
+    const display = document.getElementById("sens-value-display");
+    if(display) display.innerText = val;
+    
+    // Matematiksel çarpanı yeniledik: 0'da yavaş, 100'de iki kat hızlı hareket hızı limitsizliği
+    let sensFactor = 0.3 + (sensitivity / 50); 
+    player1.speed = player1.baseSpeed * sensFactor;
+}
+
 // ==========================================
 // 4. BÖLÜM: PARTİKÜL VE EFEKT MOTORU
 // ==========================================
@@ -132,27 +156,27 @@ function createExplosion(x,y) { for(let i=0; i<20; i++) { let a=Math.random()*Ma
 function updateAndDrawParticles() { for(let i=particles.length-1; i>=0; i--) { let p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02; if(p.alpha<=0){particles.splice(i,1); continue;} ctx.save(); ctx.globalAlpha=p.alpha; ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill(); ctx.restore(); } }
 
 // ==========================================
-// 5. BÖLÜM: NETWORK VE BAĞLANTI (KORUMALI)
+// 5. BÖLÜM: NETWORK VE BAĞLANTI SİSTEMİ
 // ==========================================
 function initOnlineConnection() {
     try {
         if (typeof Peer === "undefined") {
-            document.getElementById("my-peer-id").innerText = "Solo Aktif"; return;
+            const myPeerEl = document.getElementById("my-peer-id"); if(myPeerEl) myPeerEl.innerText = "Solo Aktif"; return;
         }
         let randomID = Math.floor(10000 + Math.random() * 90000).toString();
         peer = new Peer(randomID);
-        peer.on('open', id => { myID = id; document.getElementById("my-peer-id").innerText = myID; });
+        peer.on('open', id => { myID = id; const myPeerEl = document.getElementById("my-peer-id"); if(myPeerEl) myPeerEl.innerText = myID; });
         peer.on('connection', conn => {
             if (peerConn) return; 
             peerConn = conn; isHost = true; isSoloMode = false;
             document.getElementById("lobby-menu").classList.add("hidden");
             document.getElementById("pre-game-lobby").classList.remove("hidden");
-            document.getElementById("btn-lobby-start").classList.remove("hidden");
+            const startLobbyBtn = document.getElementById("btn-lobby-start"); if(startLobbyBtn) startLobbyBtn.classList.remove("hidden");
             document.getElementById("lobby-status").innerText = "Arkadaşın bağlandı! Maçı başlatabilirsin.";
             setupOnlineListeners(); sendLobbySync();
         });
     } catch (e) {
-        document.getElementById("my-peer-id").innerText = "Solo Aktif";
+        const myPeerEl = document.getElementById("my-peer-id"); if(myPeerEl) myPeerEl.innerText = "Solo Aktif";
     }
 }
 
@@ -166,6 +190,9 @@ function setupOnlineListeners() {
         if (data.type === "startGame") {
             map = data.map; finishLine = data.finishLine; monsters = data.monsters; items = data.items; bombs = data.bombs; portals = data.portals; cols = data.cols; rows = data.rows; currentWave = data.currentWave;
             canvas.width = cols * tileSize; canvas.height = rows * tileSize;
+            
+            if(!player1.x || player1.x < tileSize) { player1.x = 120; player1.y = 120; }
+            
             document.getElementById("pre-game-lobby").classList.add("hidden");
             document.getElementById("game-container").classList.remove("hidden");
             gameActive = true; gameLoop();
@@ -181,7 +208,7 @@ function sendLobbySync() {
 }
 
 // ==========================================
-// 6. BÖLÜM: OYUN ALTYAPISI VE BFS YAPAY ZEKASI
+// 6. BÖLÜM: BAREMLER VE BFS HARİTASI
 // ==========================================
 function getRequiredXP(lvl) { let b = 1000; for(let i=1; i<lvl; i++) b*=1.35; return Math.floor(b); }
 function addXP(amount) {
@@ -220,6 +247,7 @@ function spawnFinishLineRandomly() {
     finishLine.x = rx*tileSize+5; finishLine.y = ry*tileSize+5; finishLine.size = 30; map[ry][rx] = 0;
 }
 
+// Portalların Üretimi
 function spawnPortals() {
     portals = [];
     for (let i = 0; i < 2; i++) {
@@ -273,7 +301,7 @@ function getNextStepBFS(sx, sy, tx, ty) {
 }
 
 // ==========================================
-// 7. BÖLÜM: OYUN MOTORU GÜNCELLEMELERİ
+// 7. BÖLÜM: OYUN MOTORU DÖNGÜSÜ
 // ==========================================
 function updateGameElements() {
     if (gameActive && !player1.isDead) {
@@ -286,10 +314,14 @@ function updateGameElements() {
 
     if (!player1.isDead) {
         let nextX = player1.x; let nextY = player1.y;
-        if (keys["w"] || keys["ArrowUp"] || joyLeftY < -0.2) nextY -= player1.speed;
-        if (keys["s"] || keys["ArrowDown"] || joyLeftY > 0.2) nextY += player1.speed;
-        if (keys["a"] || keys["ArrowLeft"] || joyLeftX < -0.2) nextX -= player1.speed;
-        if (keys["d"] || keys["ArrowRight"] || joyLeftX > 0.2) nextX += player1.speed;
+        
+        if (keys["w"] || keys["ArrowUp"]) nextY -= player1.speed;
+        if (keys["s"] || keys["ArrowDown"]) nextY += player1.speed;
+        if (keys["a"] || keys["ArrowLeft"]) nextX -= player1.speed;
+        if (keys["d"] || keys["ArrowRight"]) nextX += player1.speed;
+
+        if (Math.abs(joyLeftY) > 0.1) nextY += joyLeftY * player1.speed;
+        if (Math.abs(joyLeftX) > 0.1) nextX += joyLeftX * player1.speed;
 
         if (!checkWallCollision(nextX, player1.y, player1.size)) player1.x = nextX;
         if (!checkWallCollision(player1.x, nextY, player1.size)) player1.y = nextY;
@@ -298,7 +330,11 @@ function updateGameElements() {
 
         if (player1.hasSpeedBoost || player1.hasShield) {
             player1.effectTimer--;
-            if (player1.effectTimer <= 0) { player1.speed = player1.baseSpeed; player1.hasSpeedBoost = false; player1.hasShield = false; document.getElementById("ui-effect").innerText = "Yok"; }
+            if (player1.effectTimer <= 0) { 
+                player1.hasSpeedBoost = false; player1.hasShield = false; 
+                document.getElementById("ui-effect").innerText = "Yok";
+                changeSensitivity(sensitivity); 
+            }
         }
 
         if (portalCooldown === 0 && portals.length === 2) {
@@ -310,8 +346,8 @@ function updateGameElements() {
         }
 
         items.forEach((item, index) => {
-            if (Math.hypot(player1.x - item.x, player1.y - item.y) < player1.size) {
-                if (item.type === "speed") { player1.hasSpeedBoost = true; player1.speed = player1.baseSpeed * 1.4; player1.effectTimer = 300; document.getElementById("ui-effect").innerText = "HIZ"; } 
+            if (Math.hypot(player1.x - item.x, item.y - item.y) < player1.size) {
+                if (item.type === "speed") { player1.hasSpeedBoost = true; player1.speed = player1.speed * 1.5; player1.effectTimer = 300; document.getElementById("ui-effect").innerText = "HIZ"; } 
                 else if (item.type === "shield") { player1.hasShield = true; player1.effectTimer = 600; document.getElementById("ui-effect").innerText = "KALKAN"; }
                 else if (item.type === "diamond") { currentMatchDiamonds += 1; updateGlobalDiamondUI(); }
                 items.splice(index, 1);
@@ -326,6 +362,7 @@ function updateGameElements() {
                 if (player1.hasShield) {
                     player1.hasShield = false; player1.effectTimer = 0; document.getElementById("ui-effect").innerText = "Yok";
                     bombs = bombs.filter(b => b !== bomb);
+                    changeSensitivity(sensitivity);
                 } else { player1.isDead = true; deathReason = "TNT patlamasında havaya uçtun! 💥"; if (!isSoloMode || player2.isDead) endGame(false); }
             }
         });
@@ -355,7 +392,7 @@ function updateGameElements() {
 
     monsters.forEach(m => {
         if (!player1.isDead && Math.hypot(player1.x - m.x, player1.y - m.y) < player1.size) {
-            if (player1.hasShield) { player1.hasShield = false; player1.effectTimer = 0; m.x -= 60; } 
+            if (player1.hasShield) { player1.hasShield = false; player1.effectTimer = 0; m.x -= 60; changeSensitivity(sensitivity); } 
             else { player1.isDead = true; deathReason = "Kızgın canavara yem oldun! 👾"; }
         }
     });
@@ -370,9 +407,7 @@ function draw() {
     portals.forEach(p => drawPortal(p.x, p.y, p.size));
     items.forEach(item => drawPowerUp(item.x, item.y, item.type, item.size));
     bombs.forEach(bomb => drawTNT(bomb.x, bomb.y, bomb.size));
-    if(finishLine) {
-        ctx.fillStyle = "#ffd700"; ctx.fillRect(finishLine.x, finishLine.y, finishLine.size, finishLine.size);
-    }
+    if(finishLine) { ctx.fillStyle = "#ffd700"; ctx.fillRect(finishLine.x, finishLine.y, finishLine.size, finishLine.size); }
     if (!player1.isDead) drawAstronaut(ctx, player1.x, player1.y, player1.color, player1.size);
     if (!isSoloMode && !player2.isDead) drawAstronaut(ctx, player2.x, player2.y, player2.color, player2.size);
     monsters.forEach(m => drawMonster(m.x, m.y, m.size)); updateAndDrawParticles();
@@ -385,9 +420,7 @@ function gameLoop() { if (!gameActive) return; updateGameElements(); draw(); ani
 // ==========================================
 function endGame(isWin) {
     matchSurvivalTime = Math.max(0, Math.floor((Date.now() - matchStartTime) / 1000));
-    
-    gameActive = false; 
-    cancelAnimationFrame(animationFrameId);
+    gameActive = false; cancelAnimationFrame(animationFrameId);
 
     const statTimeEl = document.getElementById("stat-time");
     const statDiamondsEl = document.getElementById("stat-diamonds");
@@ -461,9 +494,7 @@ if(lobbyStartBtn) {
     lobbyStartBtn.addEventListener("click", () => {
         if (!isHost) return;
         generateRandomMap(); spawnPlayers(); spawnFinishLineRandomly(); spawnPortals(); spawnMonsters(); spawnItems(); spawnBombs();
-        if(peerConn && peerConn.open) {
-            peerConn.send({ type: "startGame", map, finishLine, monsters, items, bombs, portals, currentWave, cols, rows });
-        }
+        if(peerConn && peerConn.open) { peerConn.send({ type: "startGame", map, finishLine, monsters, items, bombs, portals, currentWave, cols, rows }); }
         document.getElementById("pre-game-lobby").classList.add("hidden"); document.getElementById("game-container").classList.remove("hidden");
         gameActive = true; gameLoop();
     });
@@ -505,10 +536,17 @@ document.getElementById("btn-fullscreen").addEventListener("click", () => {
 
 function startNewMatch() {
     document.getElementById("lobby-menu").classList.add("hidden"); document.getElementById("game-container").classList.remove("hidden");
-    player1.isDead = false; player1.hasShield = false; player1.hasSpeedBoost = false; player1.speed = player1.baseSpeed; player2.isDead = false; particles = []; currentMatchDiamonds = 0;
+    player1.isDead = false; player1.hasShield = false; player1.hasSpeedBoost = false; player2.isDead = false; particles = []; currentMatchDiamonds = 0;
     if('ontouchstart' in window || navigator.maxTouchPoints > 0) { document.getElementById("mobile-controls").style.display = "block"; }
     generateRandomMap(); spawnPlayers(); spawnFinishLineRandomly(); spawnPortals(); spawnMonsters(); spawnItems(); spawnBombs();
     const uiWave = document.getElementById("ui-wave"); if(uiWave) uiWave.innerText = currentWave;
+    
+    changeJoystickPosition(joystickPos);
+    const selectEl = document.getElementById("joystick-pos-select"); if(selectEl) selectEl.value = joystickPos;
+    
+    changeSensitivity(sensitivity);
+    const sliderEl = document.getElementById("sensitivity-slider"); if(sliderEl) sliderEl.value = sensitivity;
+
     updateProfileUI(); updateGlobalDiamondUI(); gameActive = true;
     matchStartTime = Date.now(); 
     gameLoop();
@@ -529,4 +567,29 @@ function setupJoystick(zoneId, stickId, callback) {
 }
 setupJoystick("joystick-left", "stick-left", (x, y) => { joyLeftX = x; joyLeftY = y; });
 
+// 📱 YENİ: DOKUNMATİK SÜRÜKLEMELİ HASSASİYET BAĞLAYICI MOTORU
+function setupSensitivityTouch() {
+    const slider = document.getElementById("sensitivity-slider");
+    if (!slider) return;
+
+    function handleSliderTouch(e) {
+        e.preventDefault(); // Sayfanın aşağı kaymasını engeller
+        let touch = e.touches[0];
+        let rect = slider.getBoundingClientRect();
+        
+        // Parmağın çubuk üzerindeki yüzdelik konumunu hesaplıyoruz (0 ile 1 arası)
+        let percentage = (touch.clientX - rect.left) / rect.width;
+        percentage = Math.max(0, Math.min(1, percentage)); // Sınırları koru
+        
+        let targetValue = Math.round(percentage * 100);
+        slider.value = targetValue;
+        changeSensitivity(targetValue); // Canlı olarak hıza etki et
+    }
+
+    slider.addEventListener("touchstart", handleSliderTouch, { passive: false });
+    slider.addEventListener("touchmove", handleSliderTouch, { passive: false });
+}
+
+// Başlangıç tetikleyicileri
 initOnlineConnection(); updateLobbyPreviews(); updateProfileUI(); updateGlobalDiamondUI();
+setupSensitivityTouch(); // Sürükleme motorunu devreye aldık
