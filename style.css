@@ -1,131 +1,175 @@
-body {
-    background-color: #0b0e14;
-    color: #fff;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    overflow: hidden;
+/* 1. ADIM: GENEL EKRAN VE ARKA PLAN AYARLARI */
+/* Oyunu tam ekrana oturtur, kaydırma çubuklarını gizler ve koyu temayı ayarlar */
+body { 
+    background-color: #0b0e14; 
+    color: #fff; 
+    font-family: 'Segoe UI', sans-serif; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    margin: 0; 
+    overflow: hidden; 
+    touch-action: none; 
 }
 
-/* Ana Menü */
-#lobby-menu {
-    background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%);
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
-    text-align: center;
-    width: 400px;
-    border: 2px solid #00ffcc;
+/* 2. ADIM: ANA MENÜ VE LOBİ KUTULARININ TASARIMI */
+/* Escape or Die yazısının olduğu o neon ışıklı kutuların tasarımı */
+#lobby-menu, #pre-game-lobby { 
+    background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%); 
+    padding: 30px; 
+    border-radius: 20px; 
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2); 
+    text-align: center; 
+    border: 2px solid #00ffcc; 
 }
 
-h1 {
-    font-size: 2.5rem;
-    color: #00ffcc;
-    text-shadow: 0 0 10px rgba(0,255,204,0.5);
-    margin-bottom: 5px;
+#pre-game-lobby { 
+    width: 500px; 
 }
 
-.lobby-box {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-radius: 12px;
-    margin: 20px 0;
+h1 { 
+    color: #00ffcc; 
+    text-shadow: 0 0 10px rgba(0,255,204,0.5); 
 }
 
-#my-id-display {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #ff007f;
-    letter-spacing: 2px;
-    margin: 10px 0;
+.lobby-box { 
+    background: rgba(255, 255, 255, 0.05); 
+    padding: 12px; 
+    border-radius: 12px; 
+    margin: 15px 0; 
 }
 
-input {
-    width: 80%;
-    padding: 10px;
-    font-size: 1.2rem;
-    border-radius: 8px;
-    border: 2px solid #334155;
-    background: #0f172a;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 10px;
+input[type="text"] { 
+    width: 85%; 
+    padding: 8px; 
+    border-radius: 8px; 
+    border: 2px solid #334155; 
+    background: #0f172a; 
+    color: #fff; 
+    text-align: center; 
 }
 
-input:focus {
-    border-color: #ff007f;
-    outline: none;
+.btn { 
+    background-color: #00ffcc; 
+    color: #000; 
+    border: none; 
+    padding: 12px; 
+    font-weight: bold; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    width: 100%; 
 }
 
-.btn {
-    background-color: #00ffcc;
-    color: #000;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-    width: 90%;
+/* 3. ADIM: YENİ EKLENEN BEKLEME ODASI (LOBİ) YERLEŞİMİ */
+/* Arkadaşınla senin astronotunun yan yana, kutular içinde durmasını sağlar */
+.lobby-players-container { 
+    display: flex; 
+    justify-content: space-around; 
+    margin-top: 30px; 
 }
 
-.btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(0,255,204,0.6);
+.player-slot { 
+    background: rgba(255, 255, 255, 0.05); 
+    padding: 20px; 
+    border-radius: 15px; 
+    width: 180px; 
+    position: relative; 
+    border: 1px solid #334155; 
 }
 
-.btn-join {
-    background-color: #ff007f;
-    color: #fff;
+/* Kimin lobisine girildiyse onun üstünde parlayan "Lobi Sahibi" rozeti */
+.host-badge { 
+    position: absolute; 
+    top: -10px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    background: #00ffcc; 
+    color: #000; 
+    font-size: 0.7rem; 
+    font-weight: bold; 
+    padding: 2px 8px; 
+    border-radius: 10px; 
 }
 
-.btn-join:hover {
-    box-shadow: 0 0 15px rgba(ff,0,7f,0.6);
-}
-
-.or-separator {
-    font-weight: bold;
-    color: #64748b;
-}
-
-/* Oyun Ekranı */
+/* Ekranlar arası geçişi sağlayan gizleme kodu */
 .hidden { display: none !important; }
 
-#game-container {
-    text-align: center;
+/* 4. ADIM: OYUN İÇİ ARAYÜZ VE HARİTA ÖLÇEKLENDİRME */
+/* Haritanın telefonlarda ve bilgisayarda taşmasını engeller, ekrana sığdırır */
+#game-container { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 100vw; 
+    height: 100vh; 
+    justify-content: center; 
 }
 
-#game-ui {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: #00ffcc;
+#game-ui { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    width: 95vw; 
+    margin-bottom: 10px; 
 }
 
-canvas {
-    background-color: #05070a;
-    border: 4px solid #1e293b;
-    box-shadow: 0 0 30px rgba(0,0,0,0.9);
-}
-/* Oyun Sonu Ekranı */
-#game-over-screen {
-    position: absolute;
-    background: rgba(10, 13, 20, 0.95);
-    padding: 40px;
-    border-radius: 20px;
-    border: 3px solid #ff007f;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(255, 0, 127, 0.4);
-    z-index: 10;
+#canvas-wrapper { 
+    border: 3px solid #1e293b; 
+    display: flex; 
 }
 
-#game-over-title {
-    font-size: 2.5rem;
-    color: #ff007f;
-    margin-bottom: 10px;
+canvas { 
+    background-color: #05070a; 
+    width: 100%; 
+    height: auto; 
+    object-fit: contain; 
+}
+
+/* 5. ADIM: NEON MAVİ SEVİYE VE TP ÇUBUĞU */
+/* Brawl Stars tarzı dolan tecrübe puanı barı */
+.level-bar-bg { 
+    width: 150px; 
+    height: 12px; 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 6px; 
+    overflow: hidden; 
+    border: 1px solid #00ffcc; 
+}
+
+.level-bar-fill { 
+    width: 0%; 
+    height: 100%; 
+    background: #00ffcc; 
+    transition: width 0.3s; 
+}
+
+/* 6. ADIM: MOBİL JOYSTICK VE OYUN BULUTU */
+.joystick-zone { 
+    width: 110px; 
+    height: 110px; 
+    background: rgba(255, 255, 255, 0.1); 
+    border-radius: 50%; 
+    position: absolute; 
+    bottom: 20px; 
+    left: 20px; 
+}
+
+.joystick-stick { 
+    width: 44px; 
+    height: 44px; 
+    background: rgba(0, 255, 204, 0.6); 
+    border-radius: 50%; 
+    position: absolute; 
+    top: 33px; 
+    left: 33px; 
+}
+
+#game-over-screen { 
+    position: absolute; 
+    background: rgba(10, 13, 20, 0.95); 
+    padding: 30px; 
+    border-radius: 20px; 
+    border: 3px solid #ff007f; 
+    text-align: center; 
 }
