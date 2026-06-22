@@ -208,10 +208,10 @@ function getNextStepBFS(startGridX, startGridY, targetGridX, targetGridY) {
     visited[startGridY][startGridX] = true;
 
     const dirs = [
-        { dx: 0, dy: -1 }, // Yukarı
-        { dx: 0, dy: 1 },  // Aşağı
-        { dx: -1, dy: 0 }, // Sol
-        { dx: 1, dy: 0 }   // Sağ
+        { dx: 0, dy: -1 }, 
+        { dx: 0, dy: 1 },  
+        { dx: -1, dy: 0 }, 
+        { dx: 1, dy: 0 }   
     ];
 
     let found = false;
@@ -238,9 +238,8 @@ function getNextStepBFS(startGridX, startGridY, targetGridX, targetGridY) {
         }
     }
 
-    if (!found) return null; // Yol kapalıysa hareket etme
+    if (!found) return null; 
 
-    // Hedef kökten geriye doğru iz sürerek ilk adımı bul
     let curr = { x: targetGridX, y: targetGridY };
     let path = [];
     while (curr && (curr.x !== startGridX || curr.y !== startGridY)) {
@@ -298,7 +297,7 @@ function updateGameElements() {
         }
     }
 
-    // DEVRİMSEL YENİ YAPAY ZEKA NAVİGASYONU
+    // BFS AKILLI CANAVAR NAVİGASYONU
     monsters.forEach((m, idx) => {
         let target = null;
         if (!player.isDead) target = player;
@@ -313,32 +312,28 @@ function updateGameElements() {
 
         if (!target) return;
 
-        // Kare (Grid) koordinatlarını hesapla
         let mGridX = Math.floor((m.x + m.size/2) / tileSize);
         let mGridY = Math.floor((m.y + m.size/2) / tileSize);
         
         let tGridX = Math.floor((target.x + target.size/2 + m.offsetX) / tileSize);
         let tGridY = Math.floor((target.y + target.size/2 + m.offsetY) / tileSize);
 
-        // Sınır koruması
         tGridX = Math.max(1, Math.min(cols - 2, tGridX));
         tGridY = Math.max(1, Math.min(rows - 2, tGridY));
 
-        // BFS ile bir sonraki ideal kare adımı hesapla
         let nextStep = getNextStepBFS(mGridX, mGridY, tGridX, tGridY);
 
         if (nextStep) {
             let targetWorldX = nextStep.x * tileSize + 10;
             let targetWorldY = nextStep.y * tileSize + 10;
 
-            // Bulunan en kısa yol hücresine doğru pürüzsüzce ak
             if (m.x < targetWorldX) m.x += m.speed;
             if (m.x > targetWorldX) m.x -= m.speed;
             if (m.y < targetWorldY) m.y += m.speed;
             if (m.y > targetWorldY) m.y -= m.speed;
         }
 
-        // Canavarlar üst üste binmesin diye milimetrik itme
+        // Canavarların üst üste binmesini engelleme
         monsters.forEach((otherM, otherIdx) => {
             if (idx !== otherIdx) {
                 let distToMonster = Math.hypot(m.x - otherM.x, m.y - otherM.y);
@@ -349,7 +344,6 @@ function updateGameElements() {
             }
         });
 
-        // Yakalama Kontrolü
         if (!player.isDead) {
             let dist = Math.hypot(player.x - m.x, player.y - m.y);
             if (dist < player.size) {
