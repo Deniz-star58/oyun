@@ -1,0 +1,147 @@
+body {
+    background-color: #0b0e14;
+    color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    touch-action: none; /* Mobilde çift tıklama yakınlaştırmasını kapatır */
+}
+
+#lobby-menu {
+    background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+    text-align: center;
+    width: 360px;
+    border: 2px solid #00ffcc;
+}
+
+h1 {
+    font-size: 2.2rem;
+    color: #00ffcc;
+    text-shadow: 0 0 10px rgba(0,255,204,0.5);
+    margin: 0 0 15px 0;
+}
+
+.lobby-box {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+    margin: 15px 0;
+}
+
+#profile-stats {
+    font-size: 0.9rem;
+    color: #ffd700;
+    margin-top: 5px;
+}
+
+#my-id-display {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #ff007f;
+    margin: 5px 0;
+}
+
+input {
+    width: 85%;
+    padding: 8px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 2px solid #334155;
+    background: #0f172a;
+    color: #fff;
+    text-align: center;
+}
+
+.btn {
+    background-color: #00ffcc;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 90%;
+    margin-top: 8px;
+}
+
+.btn-join { background-color: #ff007f; color: #fff; }
+.or-separator { font-weight: bold; color: #64748b; margin: 10px 0; }
+.hidden { display: none !important; }
+
+/* Oyun Alanı Ekranı */
+#game-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game-ui {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #00ffcc;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+canvas {
+    background-color: #05070a;
+    border: 3px solid #1e293b;
+    max-width: 100vw;
+    max-height: 70vh; /* Telefonlarda ekrana sığması için ölçeklenir */
+    object-fit: contain;
+}
+
+/* Mobil Joystick Alanı */
+#mobile-controls {
+    display: none; /* Bilgisayarda gizli, mobilde JS ile açılacak */
+    position: absolute;
+    bottom: 20px;
+    left: 50px;
+    width: 120px;
+    height: 120px;
+    z-index: 5;
+}
+
+#joystick-zone {
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    position: relative;
+}
+
+#joystick-stick {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 255, 204, 0.6);
+    border-radius: 50%;
+    position: absolute;
+    top: 35px;
+    left: 35px;
+}
+
+/* Oyun Sonu */
+#game-over-screen {
+    position: absolute;
+    background: rgba(10, 13, 20, 0.95);
+    padding: 35px;
+    border-radius: 20px;
+    border: 3px solid #ff007f;
+    text-align: center;
+    z-index: 10;
+    width: 300px;
+}

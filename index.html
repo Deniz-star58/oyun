@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Koridor Kabusu v3</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div id="lobby-menu">
+        <h1>KORİDOR KABUSU</h1>
+        
+        <div class="lobby-box">
+            <h3>Profil Ayarları:</h3>
+            <input type="text" id="username-input" placeholder="Oyuncu Adı Girin" value="Oyuncu_1">
+            <div id="profile-stats">Seviye: <span id="menu-level">1</span> | TP: <span id="menu-xp">0</span></div>
+            
+            <div style="margin-top: 12px;">
+                <label for="color-picker" style="font-size: 0.9rem; color: #00ffcc; display: block; margin-bottom: 5px;">Karakter Rengini Seç:</label>
+                <input type="color" id="color-picker" value="#00ffcc" style="width: 50px; height: 35px; padding: 0; border: none; cursor: pointer; background: transparent;">
+            </div>
+        </div>
+
+        <div class="lobby-box">
+            <h3>Senin Lobi Kodun:</h3>
+            <div id="my-id-display">...</div>
+            <button id="btn-start-solo" class="btn">Tek Başına Başla</button>
+        </div>
+        <div class="or-separator">VEYA</div>
+        <div class="lobby-box">
+            <h3>Arkadaşının Kodunu Gir:</h3>
+            <input type="text" id="friend-id-input" placeholder="Örn: 48A2">
+            <button id="btn-join-lobby" class="btn btn-join">Lobiye Katıl</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <div id="game-ui">
+            <div>İsim: <b id="ui-username">-</b> | Lvl: <b id="ui-level">1</b></div>
+            <div>Lobi: <b id="current-lobby-text">-</b></div>
+            <div>Aktif Efekt: <b id="ui-effect">Yok</b></div>
+        </div>
+        <canvas id="gameCanvas" width="1200" height="800"></canvas>
+
+        <div id="mobile-controls">
+            <div id="joystick-zone">
+                <div id="joystick-stick"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+        <h2 id="game-over-title">OYUN BİTTİ</h2>
+        <p id="game-over-msg">Canavara yakalandın!</p>
+        <div id="xp-gain-text" style="color: #ffd700; margin-bottom: 15px;"></div>
+        <button id="btn-next-game" class="btn">Yeniden / Sonraki Maç</button>
+        <button id="btn-go-menu" class="btn btn-join" style="margin-top: 10px;">Ana Menüye Dön</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
