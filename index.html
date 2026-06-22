@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Escape or Die - Final Master</title>
+    <title>Escape or Die - Final Version</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 </head>
@@ -18,10 +18,18 @@
             <div id="admin-secret-trigger" onclick="toggleAdminPanel()" style="position: absolute; right: 12px; top: 12px; cursor: pointer; font-size: 1.3rem; z-index: 99;">⚙️</div>
 
             <h3>Profil Ayarları:</h3>
-            <input type="text" id="username-input" placeholder="Adını Yaz..." value="Deniz">
+            <input type="text" id="username-input" placeholder="Adını Yaz..." value="Player 1">
             <div id="profile-stats" style="margin-top: 5px;">Seviye: <span id="menu-level">1</span> | TP: <span id="menu-xp">0</span></div>
             
             <div style="margin-top: 10px; text-align: center;">
+                <label style="font-size: 0.9rem; color: #00ffcc;">Kontrol Modu:</label>
+                <select id="control-mode-select" onchange="changeControlMode(this.value)" style="padding: 4px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334155; margin-left: 5px;">
+                    <option value="joystick">Yuvarlak Joystick</option>
+                    <option value="arrows">Klasik Ok Tuşları</option>
+                </select>
+            </div>
+
+            <div id="joystick-settings-group" style="margin-top: 10px; text-align: center;">
                 <label style="font-size: 0.9rem; color: #00ffcc;">Joystick Konumu:</label>
                 <select id="joystick-pos-select" onchange="changeJoystickPosition(this.value)" style="padding: 4px; border-radius: 5px; background: #0f172a; color: white; border: 1px solid #334155; margin-left: 5px;">
                     <option value="left">Sol Taraf</option>
@@ -30,7 +38,7 @@
             </div>
 
             <div style="margin-top: 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                <label style="font-size: 0.9rem; color: #00ffcc;">Joystick Hassasiyeti: <span id="sens-value-display" style="color: #ffd700; font-weight: bold;">50</span></label>
+                <label style="font-size: 0.9rem; color: #00ffcc;">Kontrol Hassasiyeti: <span id="sens-value-display" style="color: #ffd700; font-weight: bold;">50</span></label>
                 <input type="range" id="sensitivity-slider" min="0" max="100" value="50" style="width: 80%; cursor: pointer;">
             </div>
 
@@ -84,7 +92,7 @@
     <div id="game-container" class="hidden">
         <div id="game-ui">
             <div class="level-container">
-                <div>P1: <span id="ui-username">Deniz</span> | 💎 <span id="ui-diamonds-match">0</span></div>
+                <div>P1: <span id="ui-username">Player 1</span> | 💎 <span id="ui-diamonds-match">0</span></div>
                 <div class="level-bar-label">Lvl: <span id="ui-level">1</span></div>
                 <div class="level-bar-bg"><div id="ui-tp-bar" class="level-bar-fill"></div></div>
             </div>
@@ -103,6 +111,14 @@
         <div id="mobile-controls">
             <div id="joystick-left" class="joystick-zone position-left">
                 <div id="stick-left" class="joystick-stick"></div>
+            </div>
+            <div id="arrow-controls-wrapper" class="hidden">
+                <div class="arrow-btn" ontouchstart="setArrowKey('ArrowUp', true)" ontouchend="setArrowKey('ArrowUp', false)" onmousedown="setArrowKey('ArrowUp', true)" onmouseup="setArrowKey('ArrowUp', false)">⬆️</div>
+                <div style="display:flex; gap: 40px;">
+                    <div class="arrow-btn" ontouchstart="setArrowKey('ArrowLeft', true)" ontouchend="setArrowKey('ArrowLeft', false)" onmousedown="setArrowKey('ArrowLeft', true)" onmouseup="setArrowKey('ArrowLeft', false)">⬅️</div>
+                    <div class="arrow-btn" ontouchstart="setArrowKey('ArrowRight', true)" ontouchend="setArrowKey('ArrowRight', false)" onmousedown="setArrowKey('ArrowRight', true)" onmouseup="setArrowKey('ArrowRight', false)">➡️</div>
+                </div>
+                <div class="arrow-btn" ontouchstart="setArrowKey('ArrowDown', true)" ontouchend="setArrowKey('ArrowDown', false)" onmousedown="setArrowKey('ArrowDown', true)" onmouseup="setArrowKey('ArrowDown', false)">⬇️</div>
             </div>
         </div>
     </div>

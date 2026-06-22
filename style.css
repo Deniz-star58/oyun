@@ -1,193 +1,38 @@
-/* ==========================================
-   1. BÖLÜM: EKRANIN GENEL VE ARKA PLAN AYARLARI
-   ========================================== */
-/* Oyunu ekrana tam oturtur, kenarlardan taşmaları ve kaydırma çubuklarını engeller */
 body { 
     background-color: #0b0e14; 
     color: #fff; 
     font-family: 'Segoe UI', sans-serif; 
     display: flex; 
     justify-content: center; 
-    align-items: flex-start; /* Dikey hizalamayı üste sabitler */
+    align-items: flex-start; 
     min-height: 100vh; 
     margin: 0; 
-    overflow-y: auto; /* Taşma durumunda dikey kaydırma çubuğunu aktifleştirir */
+    overflow-y: auto; 
     padding-top: 20px;
     box-sizing: border-box;
 }
 
-/* ==========================================
-   2. BÖLÜM: ANA MENÜ VE LOBİ PANELI
-   ========================================== */
-/* Giriş ekranındaki ve lobi ekranındaki panellerin parlayan neon tasarımları */
-#lobby-menu, #pre-game-lobby { 
-    background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%); 
-    padding: 30px; 
-    border-radius: 20px; 
-    box-shadow: 0 0 30px rgba(0, 255, 204, 0.2); 
-    text-align: center; 
-    border: 2px solid #00ffcc; 
-    position: relative; 
-}
+#lobby-menu, #pre-game-lobby { background: linear-gradient(135deg, #151c28 0%, #0a0d14 100%); padding: 30px; border-radius: 20px; box-shadow: 0 0 30px rgba(0, 255, 204, 0.2); text-align: center; border: 2px solid #00ffcc; position: relative; margin-bottom: 30px; }
+#pre-game-lobby { width: 500px; }
+.lobby-players-container { display: flex; justify-content: space-around; margin-top: 30px; }
+.player-slot { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; width: 180px; position: relative; border: 1px solid #334155; }
+.host-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #00ffcc; color: #000; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 10px; }
+h1 { color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.5); margin-bottom: 5px; }
+.developer-credit { font-size: 0.85rem; color: #ff007f; letter-spacing: 2px; margin-bottom: 15px; font-weight: bold; }
+.diamond-display-menu { background: rgba(254, 240, 138, 0.1); padding: 8px; border-radius: 10px; border: 1px dashed #ffd700; font-weight: bold; color: #ffd700; margin-bottom: 10px; font-size: 1.1rem; }
+.lobby-box { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 12px; margin: 15px 0; }
+input[type="text"], select { width: 85%; padding: 8px; border-radius: 8px; border: 2px solid #334155; background: #0f172a; color: #fff; text-align: center; font-size: 1rem; outline: none; }
+.btn { background-color: #00ffcc; color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; transition: background 0.2s, transform 0.1s; }
+.btn:active { transform: scale(0.98); }
+.hidden { display: none !important; }
 
-#pre-game-lobby { 
-    width: 500px; 
-}
+input[type="range"] { -webkit-appearance: none; background: #1e293b; height: 6px; border-radius: 5px; outline: none; border: 1px solid #334155; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; background: #00ffcc; width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 0 8px #00ffcc; cursor: pointer; }
 
-h1 { 
-    color: #00ffcc; 
-    text-shadow: 0 0 10px rgba(0,255,204,0.5); 
-    margin-bottom: 5px; 
-}
+#admin-secret-trigger { position: absolute; right: 12px; top: 12px; cursor: pointer; font-size: 1.3rem; z-index: 99; opacity: 0.5; transition: opacity 0.2s; }
+#admin-secret-trigger:hover { opacity: 1; }
+#admin-panel { background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; border-radius: 8px; padding: 8px; margin-top: 10px; }
 
-.developer-credit { 
-    font-size: 0.85rem; 
-    color: #ff007f; 
-    letter-spacing: 2px; 
-    margin-bottom: 15px; 
-    font-weight: bold; 
-}
-
-/* Ana menüdeki toplam elmas göstergesinin tasarımı */
-.diamond-display-menu { 
-    background: rgba(254, 240, 138, 0.1); 
-    padding: 8px; 
-    border-radius: 10px; 
-    border: 1px dashed #ffd700; 
-    font-weight: bold; 
-    color: #ffd700; 
-    margin-bottom: 10px; 
-    font-size: 1.1rem; 
-}
-
-.lobby-box { 
-    background: rgba(255, 255, 255, 0.05); 
-    padding: 12px; 
-    border-radius: 12px; 
-    margin: 15px 0; 
-}
-
-/* İsim yazma, arkadaş kodu girme ve seçim kutuları */
-input[type="text"], select { 
-    width: 85%; 
-    padding: 8px; 
-    border-radius: 8px; 
-    border: 2px solid #334155; 
-    background: #0f172a; 
-    color: #fff; 
-    text-align: center; 
-    font-size: 1rem; 
-    outline: none;
-}
-
-.btn { 
-    background-color: #00ffcc; 
-    color: #000; 
-    border: none; 
-    padding: 12px; 
-    font-weight: bold; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    width: 100%; 
-    font-size: 1rem; 
-    transition: background 0.2s, transform 0.1s; 
-}
-
-.btn:hover { 
-    opacity: 0.9; 
-}
-
-.btn:active {
-    transform: scale(0.98);
-}
-
-/* Ekran geçişlerinde elemanları gizlemek için kullanılan kritik kod */
-.hidden { 
-    display: none !important; 
-}
-
-/* Şık Hassasiyet Slider Çubuğu Görünümü */
-input[type="range"] { 
-    -webkit-appearance: none; 
-    background: #1e293b; 
-    height: 6px; 
-    border-radius: 5px; 
-    outline: none; 
-    border: 1px solid #334155; 
-}
-
-input[type="range"]::-webkit-slider-thumb { 
-    -webkit-appearance: none; 
-    background: #00ffcc; 
-    width: 16px; 
-    height: 16px; 
-    border-radius: 50%; 
-    box-shadow: 0 0 8px #00ffcc; 
-    cursor: pointer; 
-}
-
-/* ==========================================
-   3. BÖLÜM: GELİŞMİŞ ONLINE LOBİ ODASI YERLEŞİMİ
-   ========================================== */
-/* Arkadaşın bağlandığında astronotların yan yana durduğu kutular */
-.lobby-players-container { 
-    display: flex; 
-    justify-content: space-around; 
-    margin-top: 30px; 
-}
-
-.player-slot { 
-    background: rgba(255,255,255,0.05); 
-    padding: 20px; 
-    border-radius: 15px; 
-    width: 180px; 
-    position: relative; 
-    border: 1px solid #334155; 
-}
-
-/* Lobiyi kuran kişinin üzerinde parlayan yeşil rozet */
-.host-badge { 
-    position: absolute; 
-    top: -10px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    background: #00ffcc; 
-    color: #000; 
-    font-size: 0.7rem; 
-    font-weight: bold; 
-    padding: 2px 8px; 
-    border-radius: 10px; 
-}
-
-/* ==========================================
-   4. BÖLÜM: GİZLİ YÖNETİCİ (ADMIN) PANELİ
-   ========================================== */
-#admin-secret-trigger { 
-    position: absolute; 
-    right: 12px; 
-    top: 12px; 
-    cursor: pointer; 
-    font-size: 1.3rem; 
-    z-index: 99; 
-    opacity: 0.5; 
-    transition: opacity 0.2s; 
-}
-
-#admin-secret-trigger:hover { 
-    opacity: 1; 
-}
-
-#admin-panel { 
-    background: rgba(255, 215, 0, 0.1); 
-    border: 1px solid #ffd700; 
-    border-radius: 8px; 
-    padding: 8px; 
-    margin-top: 10px; 
-}
-
-/* ==========================================
-   5. BÖLÜM: OYUN İÇİ PANEL VE TELEFON UYUMLULUĞU
-   ========================================== */
 #game-container { 
     display: flex; 
     flex-direction: column; 
@@ -197,107 +42,35 @@ input[type="range"]::-webkit-slider-thumb {
     justify-content: space-between; 
     padding: 10px 0; 
     box-sizing: border-box; 
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    overflow: hidden;
 }
 
-#game-ui { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    width: 95vw; 
-}
-
-#btn-game-exit { 
-    background: #ff007f; 
-    color: white; 
-    border: none; 
-    padding: 6px 12px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-}
+#game-ui { display: flex; justify-content: space-between; align-items: center; width: 95vw; z-index: 10; }
+#btn-game-exit { background: #ff007f; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
 
 #canvas-wrapper { 
     border: 3px solid #1e293b; 
     display: flex; 
+    transition: transform 0.1s ease-out; 
 }
 
-canvas { 
-    background-color: #05070a; 
-    max-width: 95vw; 
-    max-height: 65vh; 
-    object-fit: contain; 
-}
+canvas { background-color: #05070a; max-width: 95vw; max-height: 65vh; object-fit: contain; }
+.level-bar-bg { width: 150px; height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px; overflow: hidden; border: 1px solid #00ffcc; }
+.level-bar-fill { width: 0%; height: 100%; background: #00ffcc; transition: width 0.3s; }
 
-/* Deneyip seviye atladıkça dolan arayüz barı */
-.level-bar-bg { 
-    width: 150px; 
-    height: 12px; 
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 6px; 
-    overflow: hidden; 
-    border: 1px solid #00ffcc; 
-}
+#mobile-controls { position: relative; width: 100vw; height: 130px; margin-top: auto; pointer-events: none; z-index: 10; display: flex; justify-content: center; align-items: center; }
 
-.level-bar-fill { 
-    width: 0%; 
-    height: 100%; 
-    background: #00ffcc; 
-    transition: width 0.3s; 
-}
+.joystick-zone { width: 110px; height: 110px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; position: absolute; bottom: 5px; pointer-events: auto; }
+.joystick-stick { width: 44px; height: 44px; background: rgba(0, 255, 204, 0.7); border-radius: 50%; position: absolute; top: 33px; left: 33px; }
 
-/* ==========================================
-   6. BÖLÜM: JOYSTICK SAĞ/SOL KONUMLANDIRMA SİSTEMİ
-   ========================================== */
-#mobile-controls { 
-    position: relative; 
-    width: 100vw; 
-    height: 120px; 
-    margin-top: auto; 
-    pointer-events: none; 
-}
+.position-left { left: 25px; right: auto; }
+.position-right { right: 25px; left: auto; }
 
-.joystick-zone { 
-    width: 110px; 
-    height: 110px; 
-    background: rgba(255,255,255,0.15); 
-    border: 2px solid rgba(255,255,255,0.2); 
-    border-radius: 50%; 
-    position: absolute; 
-    bottom: 5px; 
-    pointer-events: auto; 
-}
+#arrow-controls-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; position: absolute; bottom: 10px; pointer-events: auto; }
+.arrow-btn { background: rgba(255,255,255,0.2); border: 2px solid #00ffcc; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; user-select: none; transition: background 0.1s; }
+.arrow-btn:active { background: #00ffcc; color: #000; }
 
-.joystick-stick { 
-    width: 44px; 
-    height: 44px; 
-    background: rgba(0, 255, 204, 0.7); 
-    border-radius: 50%; 
-    position: absolute; 
-    top: 33px; 
-    left: 33px; 
-}
-
-/* Değiştirilebilir joystick konum kuralları */
-.position-left { 
-    left: 25px; 
-    right: auto; 
-}
-
-.position-right { 
-    right: 25px; 
-    left: auto; 
-}
-
-/* ==========================================
-   7. BÖLÜM: GELİŞMİŞ OYUN BİTİŞ PANELİ
-   ========================================== */
-#game-over-screen { 
-    position: absolute; 
-    background: rgba(10,13,20,0.97); 
-    padding: 25px; 
-    border-radius: 20px; 
-    border: 3px solid #ff007f; 
-    text-align: center; 
-    width: 280px; 
-    box-shadow: 0 0 25px rgba(255,0,127,0.5); 
-    z-index: 999; 
-}
+#game-over-screen { position: absolute; background: rgba(10,13,20,0.97); padding: 25px; border-radius: 20px; border: 3px solid #ff007f; text-align: center; width: 280px; box-shadow: 0 0 25px rgba(255,0,127,0.5); z-index: 999; }
