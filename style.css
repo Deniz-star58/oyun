@@ -8,11 +8,12 @@ body {
     font-family: 'Segoe UI', sans-serif; 
     display: flex; 
     justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
+    align-items: flex-start; /* Dikey hizalamayı üste sabitler */
+    min-height: 100vh; 
     margin: 0; 
-    overflow: hidden; 
-    touch-action: none; /* Mobilde tarayıcının ekranı büyütüp küçültmesini engeller */
+    overflow-y: auto; /* Taşma durumunda dikey kaydırma çubuğunu aktifleştirir */
+    padding-top: 20px;
+    box-sizing: border-box;
 }
 
 /* ==========================================
